@@ -1,4 +1,8 @@
 # Databricks notebook source
+# /// script
+# [tool.databricks.environment]
+# environment_version = "5"
+# ///
 dbutils.widgets.removeAll()
 
 # COMMAND ----------
@@ -117,6 +121,30 @@ print(all_widgets)
 # MAGIC 4. How you can explain this in the interview?
 # MAGIC ..............................................................................................................
 # MAGIC
+
+# COMMAND ----------
+
+catalogs = spark.catalog.listCatalogs()
+schemas = spark.catalog.listDatabases()
+tables = spark.catalog.listTables("workspace.default")
+
+catalog_names = [c.name for c in catalogs]
+print(catalog_names)
+schema_names = [d.name for d in schemas]
+print(schema_names)
+table_names = [t.name for t in tables]
+print(table_names)
+
+dbutils.widgets.dropdown("catalog_dropdown",catalog_names[0],catalog_names)
+dbutils.widgets.dropdown("schema_dropdown",schema_names[0],schema_names)
+dbutils.widgets.dropdown("table_dropdown",table_names[0],table_names)
+
+catalog = dbutils.widgets.get("catalog_dropdown")
+schema = dbutils.widgets.get("schema_dropdown")
+table = dbutils.widgets.get("table_dropdown")
+
+df = spark.read.table(f"{catalog}.{schema}.{table}")
+df.show()
 
 # COMMAND ----------
 
